@@ -8,6 +8,7 @@ import os, time
 
 from systemManager import SystemManager
 from groupManager import GroupManager
+from imageManager import ImageManager
 import requests
 from PIL import Image
 from dbConnector import Database
@@ -21,6 +22,10 @@ app.secret_key='retrievalSystem'
 app.config['JWT_SECRET_KEY']='retrievalSystem'
 jwt = JWTManager(app)
 # app.config['SQLALCHEMY_DATABASE_URI']=''
+
+db=Database()
+imageMgr = ImageManager(upload_root_path='./',db=db) ## TODO add upload path
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -97,7 +102,21 @@ def searchByImage():
 def searchBySketch():
     return True
     
-    
+
+@app.route('/getPublicGallery',methods=['GET'])
+def getPublicGallery():
+    return ['../assets/crazing_1.jpg','../assets/crazing_1.jpg']
+
+
+@app.route('/uploadPublicImg',methods=['POST'])
+def uploadPublicImg():
+    return True
+
+@app.route('/uploadPublicImg',methods=['POST'])
+def uploadPublicImg():
+    return True
+
+
 if __name__=="__main__":
     db = Database()
     systemManager = SystemManager(db)
