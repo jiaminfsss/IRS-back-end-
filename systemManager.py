@@ -10,7 +10,7 @@ class SystemManager:
     def userLogin(self, username, password):
         print(str(username))
         sql = "SELECT * FROM userinfo where uname='"+str(username)+"'"
-        cursor = self.db.get_connection().cursor()
+        cursor = self.conn.cursor()
         cursor.execute(sql)
         info = cursor.fetchone()
         if info:

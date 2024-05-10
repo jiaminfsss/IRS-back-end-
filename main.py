@@ -7,7 +7,10 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 import os, time
 
 from systemManager import SystemManager
+from groupManager import GroupManager
 import requests
+from PIL import Image
+from dbConnector import Database
 
 
 
@@ -67,19 +70,24 @@ def searchByText():
 
 @app.route('/searchByImage',methods=['POST'])
 def searchByImage():
-    img = request.files.get['searchImage']
+    img = request.files.get('searchImage')
+    # print(img)
     kNeighbor = request.form['kNeighbor']
     # username = session.get()
     suffix = '.' + img.filename.split('.')[-1] # 获取文件后缀名
-    basedir = 'D:\\Code\\retUploadData\\'
+    # print(suffix)
+    basedir = 'D:\\Code\\Data\\retUploadData\\'
     image_name = str(int(time.time()))+suffix
     image_path = basedir+image_name
     img.save(image_path)
     
     # 与服务器算法模型连接
     url='http://127.0.0.1:5000/searchByImage' #算法模型开放端口
-    data = {'searchImage':img, 'kNeighbor':kNeighbor}
-    response = requests.post(url, data=data)
+    # data = {'searchImage':img, 'kNeighbor':kNeighbor}
+    data = {
+        'searchImage': open(image_path,'rb'), 'kNeighbor':kNeighbor
+    }
+    response = requests.post(url, files=data)
     if response.status_code == 200 :
         # print(response.content)
         return jsonify(response.content)
@@ -91,5 +99,7 @@ def searchBySketch():
     
     
 if __name__=="__main__":
-    systemManager = SystemManager()    
+    db = Database()
+    systemManager = SystemManager(db)
+    groupManager = GroupManager(db)
     app.run(port=2020,host="127.0.0.1",debug=True)
